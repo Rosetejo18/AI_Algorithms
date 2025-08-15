@@ -82,7 +82,7 @@ void BB(int start, int goal) {
 }
 
 int main() {
-    cout << "Branch and Bound with Oracle search: Start = 0 and Goal = 6\n";
+    cout << "Branch and Bound with History search: Start = 0 and Goal = 6\n";
     BB(0, 6);
     cout << endl;
     return 0;
