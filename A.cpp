@@ -1,1 +1,95 @@
-// pending
+#include<iostream>
+#include<queue>
+#include<vector>
+#include<stack>
+#include<algorithm>
+
+#define MAX_SIZE 7
+#define BEST_COST 11
+
+using namespace std;
+
+int adj[MAX_SIZE][MAX_SIZE] = {
+    // s a b c d e g
+    {0,3,5,0,0,0,0},
+    {3,0,4,0,5,0,0},
+    {5,4,0,4,0,0,0},
+    {0,0,4,0,0,6,0},
+    {0,5,0,0,0,0,3},
+    {0,0,0,6,0,0,0},
+    {0,0,0,0,3,0,0}
+};
+
+int heuristic[MAX_SIZE] = {9, 7, 6, 7, 3, 4, 0};  //changed heuristic 7+ to 7 instead of 8
+
+struct Node {
+    int nd;
+    int cost;
+    vector<int> path; //all parents in the corresponding branch
+
+    bool operator>(const Node &other) const {
+        int a = cost+heuristic[nd];
+        int b = other.cost+heuristic[other.nd];
+        if (a!=b)return a > b;
+        else return nd>other.nd;
+
+    }
+};
+
+void BB(int start, int goal) {
+    bool visited[MAX_SIZE] = {false};
+    
+    priority_queue<Node, vector<Node>, greater<Node>> pq;
+
+    pq.push({start, 0, {start}});
+    visited[start] = true;
+    bool found  = false;
+
+    cout << "Traversal: ";
+    cout << start << " ";
+
+    while (!pq.empty()) {
+        Node node = pq.top();
+        pq.pop();
+        //cout << node.nd << " " << node.cost << endl;
+        
+        if (node.nd == goal) {
+            found = true;
+            cout << "\nPath from " << start << " to " << goal << ": ";
+            for (int v : node.path) {
+                cout << v << " ";
+    
+            }
+            cout << "\nCost = " << node.cost;
+            break;
+        }
+
+        for (int i = 0; i < MAX_SIZE; i++) {
+            if (adj[node.nd][i] > 0 && !visited[i]) {
+                visited[i] = true;
+                vector<int> newPath = node.path;
+                newPath.push_back(i);
+                int curCost = node.cost;
+                int adjCost = adj[node.nd][i];
+                int newCost = curCost + adjCost;
+                if (newCost <= BEST_COST){
+                    pq.push({i,newCost, newPath});
+                    cout << i << " ";
+                }
+                //cout << i << " " << newCost << endl;
+            }
+        }
+    }
+
+    if (!found) {
+        cout << "\nNo path found from " << start << " to " << goal << endl;
+    }
+    
+}
+
+int main() {
+    cout << "Branch and Bound with Heuristics search: Start = 0 and Goal = 6\n";
+    BB(0, 6);
+    cout << endl;
+    return 0;
+}
